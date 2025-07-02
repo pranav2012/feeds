@@ -16,12 +16,7 @@ interface AuthContextType {
 	isSignedIn: boolean;
 	user: User | null;
 	signIn: (email: string, password: string) => Promise<boolean>;
-	signUp: (userData: {
-		email: string;
-		password: string;
-		firstName: string;
-		lastName: string;
-	}) => Promise<boolean>;
+	signUp: (userData: { email: string; password: string }) => Promise<boolean>;
 	signOut: () => Promise<void>;
 	loading: boolean;
 }
@@ -99,8 +94,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const signUp = async (userData: {
 		email: string;
 		password: string;
-		firstName: string;
-		lastName: string;
 	}): Promise<boolean> => {
 		try {
 			const newUser = await feedsDB.addUser(userData);

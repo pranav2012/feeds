@@ -14,13 +14,11 @@ export interface User {
     id: string;
     email: string;
     password: string;
-    firstName: string;
-    lastName: string;
     createdAt: number;
 }
 
 const DB_NAME = 'FeedsDB';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const POSTS_STORE = 'posts';
 const USERS_STORE = 'users';
 
@@ -228,15 +226,11 @@ export class FeedsDB {
         const defaultUsers = [
             {
                 email: 'demo@example.com',
-                password: 'password123',
-                firstName: 'Demo',
-                lastName: 'User'
+                password: 'password123'
             },
             {
                 email: 'test@user.com',
-                password: 'testpass',
-                firstName: 'Test',
-                lastName: 'User'
+                password: 'testpass'
             }
         ];
 

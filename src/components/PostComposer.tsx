@@ -30,7 +30,7 @@ const PostComposer: React.FC<PostComposerProps> = ({
 			await feedsDB.addPost({
 				content: content.trim(),
 				emoji: "😊",
-				author: `${user.firstName} ${user.lastName}`,
+				author: user.email,
 				authorAvatar:
 					"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face&auto=format",
 			});

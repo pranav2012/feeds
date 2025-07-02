@@ -29,7 +29,7 @@ const Navigation = () => {
 						{isSignedIn ? (
 							<>
 								<span className="text-sm text-gray-600">
-									Welcome, {user?.firstName}!
+									Welcome, {user?.email}!
 								</span>
 								<button
 									onClick={handleSignOut}
