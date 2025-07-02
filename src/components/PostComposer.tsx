@@ -232,7 +232,7 @@ const PostComposer: React.FC<PostComposerProps> = ({
 			</div>
 
 			{/* Action Bar */}
-			<div className="flex items-center justify-between pt-2">
+			<div className="flex items-center justify-between pt-2 border-t border-gray-200">
 				<div className="flex items-center space-x-1">
 					<button
 						type="button"
