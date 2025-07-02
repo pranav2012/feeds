@@ -12,10 +12,6 @@ const PostComposer: React.FC<PostComposerProps> = ({
 }) => {
 	const [content, setContent] = useState("");
 	const [isPosting, setIsPosting] = useState(false);
-	const [isBold, setIsBold] = useState(false);
-	const [isItalic, setIsItalic] = useState(false);
-	const [isUnderline, setIsUnderline] = useState(false);
-	const counter = 99;
 	const { isSignedIn, user } = useAuth();
 
 	const handleSubmit = async (e?: React.FormEvent) => {
@@ -60,57 +56,29 @@ const PostComposer: React.FC<PostComposerProps> = ({
 		}
 	};
 
-	const handleToolbarButtonClick = (action: string) => {
-		if (!isSignedIn) {
-			onAuthRequired();
-			return;
-		}
-
-		switch (action) {
-			case "bold":
-				setIsBold(!isBold);
-				break;
-			case "italic":
-				setIsItalic(!isItalic);
-				break;
-			case "underline":
-				setIsUnderline(!isUnderline);
-				break;
-			case "delete":
-				setContent("");
-				break;
-			default:
-				console.log(`${action} clicked`);
-		}
-	};
-
-	const handleActionButtonClick = (action: string) => {
-		if (!isSignedIn) {
-			onAuthRequired();
-			return;
-		}
-		console.log(`${action} button clicked`);
+	const handleNotImplemented = () => {
+		alert("function not implemented");
 	};
 
 	return (
-		<div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 max-w-2xl mx-auto">
+		<div className="bg-white rounded-2xl shadow-sm border-4 border-gray-100 p-4 max-w-2xl mx-auto">
 			{/* Top Toolbar */}
-			<div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-				<div className="flex items-center space-x-3">
+			<div className="flex items-center justify-between mb-4">
+				<div className="bg-gray-100 rounded-lg p-2 flex items-center space-x-1">
 					{/* Paragraph Dropdown */}
 					<div className="relative">
 						<select
-							className="appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 pr-8 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+							className="appearance-none bg-white border-0 rounded-md px-3 py-1.5 pr-7 text-sm text-gray-700 hover:bg-gray-50 focus:outline-none cursor-pointer h-8 shadow-sm"
 							disabled={!isSignedIn}
-							onClick={() => !isSignedIn && onAuthRequired()}>
+							onClick={handleNotImplemented}>
 							<option>Paragraph</option>
 							<option>Heading 1</option>
 							<option>Heading 2</option>
 							<option>Quote</option>
 						</select>
-						<div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+						<div className="absolute inset-y-0 right-0 flex items-center px-1.5 pointer-events-none">
 							<svg
-								className="w-4 h-4 text-gray-400"
+								className="w-3 h-3 text-gray-500"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24">
@@ -125,49 +93,36 @@ const PostComposer: React.FC<PostComposerProps> = ({
 					</div>
 
 					{/* Formatting Buttons */}
-					<div className="flex items-center space-x-1">
+					<div className="flex items-center ml-1">
 						<button
 							type="button"
-							onClick={() => handleToolbarButtonClick("bold")}
-							className={`p-2 rounded-lg text-sm font-bold hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-								isBold
-									? "bg-blue-100 text-blue-600"
-									: "text-gray-600"
-							}`}>
+							onClick={handleNotImplemented}
+							className="w-8 h-8 rounded-md text-sm font-bold hover:bg-white hover:shadow-sm focus:outline-none transition-all text-gray-700 flex items-center justify-center">
 							B
 						</button>
 						<button
 							type="button"
-							onClick={() => handleToolbarButtonClick("italic")}
-							className={`p-2 rounded-lg text-sm italic hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-								isItalic
-									? "bg-blue-100 text-blue-600"
-									: "text-gray-600"
-							}`}>
+							onClick={handleNotImplemented}
+							className="w-8 h-8 rounded-md text-sm italic hover:bg-white hover:shadow-sm focus:outline-none transition-all text-gray-700 flex items-center justify-center">
 							I
 						</button>
 						<button
 							type="button"
-							onClick={() =>
-								handleToolbarButtonClick("underline")
-							}
-							className={`p-2 rounded-lg text-sm underline hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-								isUnderline
-									? "bg-blue-100 text-blue-600"
-									: "text-gray-600"
-							}`}>
+							onClick={handleNotImplemented}
+							className="w-8 h-8 rounded-md text-sm underline hover:bg-white hover:shadow-sm focus:outline-none transition-all text-gray-700 flex items-center justify-center">
 							U
 						</button>
 					</div>
 
+					{/* Divider */}
+					<div className="w-px h-5 bg-gray-300 mx-2"></div>
+
 					{/* List Buttons */}
-					<div className="flex items-center space-x-1 border-l border-gray-200 pl-3">
+					<div className="flex items-center">
 						<button
 							type="button"
-							onClick={() =>
-								handleToolbarButtonClick("bulletList")
-							}
-							className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+							onClick={handleNotImplemented}
+							className="w-8 h-8 rounded-md text-gray-600 hover:bg-white hover:shadow-sm focus:outline-none transition-all flex items-center justify-center">
 							<svg
 								className="w-4 h-4"
 								fill="none"
@@ -183,10 +138,8 @@ const PostComposer: React.FC<PostComposerProps> = ({
 						</button>
 						<button
 							type="button"
-							onClick={() =>
-								handleToolbarButtonClick("numberedList")
-							}
-							className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+							onClick={handleNotImplemented}
+							className="w-8 h-8 rounded-md text-gray-600 hover:bg-white hover:shadow-sm focus:outline-none transition-all flex items-center justify-center">
 							<svg
 								className="w-4 h-4"
 								fill="none"
@@ -196,18 +149,29 @@ const PostComposer: React.FC<PostComposerProps> = ({
 									strokeLinecap="round"
 									strokeLinejoin="round"
 									strokeWidth={2}
-									d="M9 5l7 7-7 7"
+									d="M8 9l4-4 4 4m0 6l-4 4-4-4"
 								/>
 							</svg>
 						</button>
 					</div>
 
-					{/* Code and Counter */}
-					<div className="flex items-center space-x-2 border-l border-gray-200 pl-3">
+					{/* Divider */}
+					<div className="w-px h-5 bg-gray-300 mx-2"></div>
+
+					{/* Quote and Counter */}
+					<div className="flex items-center space-x-1">
 						<button
 							type="button"
-							onClick={() => handleToolbarButtonClick("code")}
-							className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+							onClick={handleNotImplemented}
+							className="w-8 h-8 rounded-md text-gray-600 hover:bg-white hover:shadow-sm focus:outline-none transition-all flex items-center justify-center">
+							<svg
+								className="w-4 h-4"
+								fill="currentColor"
+								viewBox="0 0 24 24">
+								<path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+							</svg>
+						</button>
+						<div className="text-gray-600 px-2 py-1 rounded-md text-sm font-medium h-8 flex items-center justify-center min-w-[32px] hover:bg-white hover:shadow-sm transition-all">
 							<svg
 								className="w-4 h-4"
 								fill="none"
@@ -220,38 +184,37 @@ const PostComposer: React.FC<PostComposerProps> = ({
 									d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
 								/>
 							</svg>
-						</button>
-						<span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-sm font-medium">
-							{counter}
-						</span>
+						</div>
 					</div>
 				</div>
 
 				{/* Delete Button */}
-				<button
-					type="button"
-					onClick={() => handleToolbarButtonClick("delete")}
-					className="p-2 rounded-lg text-red-500 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">
-					<svg
-						className="w-4 h-4"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24">
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-						/>
-					</svg>
-				</button>
+				<div className="bg-red-50 rounded-lg p-2">
+					<button
+						type="button"
+						onClick={handleNotImplemented}
+						className="w-8 h-8 rounded-md text-red-500 hover:bg-red-100 hover:shadow-sm focus:outline-none transition-all flex items-center justify-center">
+						<svg
+							className="w-4 h-4"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24">
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+							/>
+						</svg>
+					</button>
+				</div>
 			</div>
 
 			{/* Message Input Area */}
 			<div className="mb-4">
 				<div className="flex items-start space-x-3">
-					<div className="flex-shrink-0 mt-1">
-						<span className="text-2xl">😊</span>
+					<div className="flex-shrink-0">
+						<span className="text-xl leading-6">😊</span>
 					</div>
 					<div className="flex-1">
 						<textarea
@@ -259,33 +222,22 @@ const PostComposer: React.FC<PostComposerProps> = ({
 							onChange={(e) => setContent(e.target.value)}
 							onClick={handleTextareaClick}
 							placeholder="How are you feeling today?"
-							className="w-full min-h-[120px] p-3 border border-gray-200 rounded-lg resize-none outline-none text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+							className="w-full min-h-[100px] p-0 border-none resize-none outline-none text-gray-800 placeholder-gray-400 bg-transparent text-base leading-6"
 							maxLength={500}
 							readOnly={!isSignedIn}
-							style={{
-								fontWeight: isBold ? "bold" : "normal",
-								fontStyle: isItalic ? "italic" : "normal",
-								textDecoration: isUnderline
-									? "underline"
-									: "none",
-							}}
+							style={{ fontSize: "16px", lineHeight: "24px" }}
 						/>
-						<div className="flex justify-end mt-1">
-							<span className="text-xs text-gray-400">
-								{content.length}/500
-							</span>
-						</div>
 					</div>
 				</div>
 			</div>
 
 			{/* Action Bar */}
-			<div className="flex items-center justify-between pt-3 border-t border-gray-100">
-				<div className="flex items-center space-x-2">
+			<div className="flex items-center justify-between pt-2">
+				<div className="flex items-center space-x-1">
 					<button
 						type="button"
-						onClick={() => handleActionButtonClick("add")}
-						className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+						onClick={handleNotImplemented}
+						className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 focus:outline-none transition-colors">
 						<svg
 							className="w-5 h-5"
 							fill="none"
@@ -301,8 +253,8 @@ const PostComposer: React.FC<PostComposerProps> = ({
 					</button>
 					<button
 						type="button"
-						onClick={() => handleActionButtonClick("microphone")}
-						className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+						onClick={handleNotImplemented}
+						className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 focus:outline-none transition-colors">
 						<svg
 							className="w-5 h-5"
 							fill="none"
@@ -318,8 +270,8 @@ const PostComposer: React.FC<PostComposerProps> = ({
 					</button>
 					<button
 						type="button"
-						onClick={() => handleActionButtonClick("video")}
-						className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+						onClick={handleNotImplemented}
+						className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 focus:outline-none transition-colors">
 						<svg
 							className="w-5 h-5"
 							fill="none"
@@ -340,7 +292,7 @@ const PostComposer: React.FC<PostComposerProps> = ({
 					type="button"
 					onClick={handleSendClick}
 					disabled={!content.trim() || isPosting}
-					className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+					className="bg-blue-600 text-white p-2.5 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
 					{isPosting ? (
 						<svg
 							className="w-5 h-5 animate-spin"
