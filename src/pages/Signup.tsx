@@ -10,7 +10,9 @@ const Signup = () => {
 		password: "",
 		confirmPassword: "",
 	});
-	const { signIn } = useAuth();
+	const [error, setError] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const { signUp } = useAuth();
 	const navigate = useNavigate();
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,12 +22,43 @@ const Signup = () => {
 		});
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Handle signup logic here
-		console.log("Signup attempt:", formData);
-		signIn();
-		navigate("/feed");
+		setError("");
+
+		// Validation
+		if (formData.password !== formData.confirmPassword) {
+			setError("Passwords do not match");
+			return;
+		}
+
+		if (formData.password.length < 6) {
+			setError("Password must be at least 6 characters long");
+			return;
+		}
+
+		setIsLoading(true);
+
+		try {
+			const success = await signUp({
+				email: formData.email,
+				password: formData.password,
+				firstName: formData.firstName,
+				lastName: formData.lastName,
+			});
+
+			if (success) {
+				navigate("/feed");
+			} else {
+				setError(
+					"Failed to create account. Email might already be in use."
+				);
+			}
+		} catch (err) {
+			setError("An error occurred during signup. Please try again.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -47,6 +80,12 @@ const Signup = () => {
 			<div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
 				<div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
 					<form className="space-y-6" onSubmit={handleSubmit}>
+						{error && (
+							<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+								{error}
+							</div>
+						)}
+
 						<div className="grid grid-cols-2 gap-4">
 							<div>
 								<label
@@ -64,6 +103,7 @@ const Signup = () => {
 										onChange={handleChange}
 										className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 										placeholder="First name"
+										disabled={isLoading}
 									/>
 								</div>
 							</div>
@@ -84,6 +124,7 @@ const Signup = () => {
 										onChange={handleChange}
 										className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 										placeholder="Last name"
+										disabled={isLoading}
 									/>
 								</div>
 							</div>
@@ -106,6 +147,7 @@ const Signup = () => {
 									onChange={handleChange}
 									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 									placeholder="Enter your email"
+									disabled={isLoading}
 								/>
 							</div>
 						</div>
@@ -125,7 +167,8 @@ const Signup = () => {
 									value={formData.password}
 									onChange={handleChange}
 									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-									placeholder="Create a password"
+									placeholder="Create a password (min 6 characters)"
+									disabled={isLoading}
 								/>
 							</div>
 						</div>
@@ -146,6 +189,7 @@ const Signup = () => {
 									onChange={handleChange}
 									className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 									placeholder="Confirm your password"
+									disabled={isLoading}
 								/>
 							</div>
 						</div>
@@ -157,6 +201,7 @@ const Signup = () => {
 								type="checkbox"
 								required
 								className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+								disabled={isLoading}
 							/>
 							<label
 								htmlFor="agree-terms"
@@ -179,8 +224,11 @@ const Signup = () => {
 						<div>
 							<button
 								type="submit"
-								className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-								Create account
+								disabled={isLoading}
+								className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+								{isLoading
+									? "Creating account..."
+									: "Create account"}
 							</button>
 						</div>
 					</form>

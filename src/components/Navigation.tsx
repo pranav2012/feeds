@@ -2,7 +2,11 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navigation = () => {
-	const { isSignedIn, signOut } = useAuth();
+	const { isSignedIn, user, signOut } = useAuth();
+
+	const handleSignOut = async () => {
+		await signOut();
+	};
 
 	return (
 		<nav className="bg-white shadow-sm border-b">
@@ -25,10 +29,10 @@ const Navigation = () => {
 						{isSignedIn ? (
 							<>
 								<span className="text-sm text-gray-600">
-									Signed in
+									Welcome, {user?.firstName}!
 								</span>
 								<button
-									onClick={signOut}
+									onClick={handleSignOut}
 									className="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
 									<span>Sign Out</span>
 									<svg

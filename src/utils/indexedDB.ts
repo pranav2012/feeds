@@ -10,9 +10,19 @@ export interface FeedPost {
     shares: number;
 }
 
+export interface User {
+    id: string;
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    createdAt: number;
+}
+
 const DB_NAME = 'FeedsDB';
-const DB_VERSION = 1;
-const STORE_NAME = 'posts';
+const DB_VERSION = 2;
+const POSTS_STORE = 'posts';
+const USERS_STORE = 'users';
 
 export class FeedsDB {
     private db: IDBDatabase | null = null;
@@ -33,14 +43,98 @@ export class FeedsDB {
             request.onupgradeneeded = (event) => {
                 const db = (event.target as IDBOpenDBRequest).result;
 
-                if (!db.objectStoreNames.contains(STORE_NAME)) {
-                    const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-                    store.createIndex('timestamp', 'timestamp', { unique: false });
+                // Create posts store
+                if (!db.objectStoreNames.contains(POSTS_STORE)) {
+                    const postsStore = db.createObjectStore(POSTS_STORE, { keyPath: 'id' });
+                    postsStore.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+
+                // Create users store
+                if (!db.objectStoreNames.contains(USERS_STORE)) {
+                    const usersStore = db.createObjectStore(USERS_STORE, { keyPath: 'id' });
+                    usersStore.createIndex('email', 'email', { unique: true });
                 }
             };
         });
     }
 
+    // User management methods
+    async addUser(userData: Omit<User, 'id' | 'createdAt'>): Promise<User> {
+        if (!this.db) {
+            await this.init();
+        }
+
+        const newUser: User = {
+            ...userData,
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            createdAt: Date.now(),
+        };
+
+        return new Promise((resolve, reject) => {
+            const transaction = this.db!.transaction([USERS_STORE], 'readwrite');
+            const store = transaction.objectStore(USERS_STORE);
+            const request = store.add(newUser);
+
+            request.onsuccess = () => {
+                resolve(newUser);
+            };
+
+            request.onerror = () => {
+                reject(new Error('Failed to add user - email might already exist'));
+            };
+        });
+    }
+
+    async getUserByEmail(email: string): Promise<User | null> {
+        if (!this.db) {
+            await this.init();
+        }
+
+        return new Promise((resolve, reject) => {
+            const transaction = this.db!.transaction([USERS_STORE], 'readonly');
+            const store = transaction.objectStore(USERS_STORE);
+            const index = store.index('email');
+            const request = index.get(email);
+
+            request.onsuccess = () => {
+                resolve(request.result || null);
+            };
+
+            request.onerror = () => {
+                reject(new Error('Failed to get user'));
+            };
+        });
+    }
+
+    async authenticateUser(email: string, password: string): Promise<User | null> {
+        const user = await this.getUserByEmail(email);
+        if (user && user.password === password) {
+            return user;
+        }
+        return null;
+    }
+
+    async getUserById(userId: string): Promise<User | null> {
+        if (!this.db) {
+            await this.init();
+        }
+
+        return new Promise((resolve, reject) => {
+            const transaction = this.db!.transaction([USERS_STORE], 'readonly');
+            const store = transaction.objectStore(USERS_STORE);
+            const request = store.get(userId);
+
+            request.onsuccess = () => {
+                resolve(request.result || null);
+            };
+
+            request.onerror = () => {
+                reject(new Error('Failed to get user'));
+            };
+        });
+    }
+
+    // Post management methods (existing functionality)
     async addPost(post: Omit<FeedPost, 'id' | 'timestamp' | 'likes' | 'comments' | 'shares'>): Promise<FeedPost> {
         if (!this.db) {
             await this.init();
@@ -56,8 +150,8 @@ export class FeedsDB {
         };
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
+            const transaction = this.db!.transaction([POSTS_STORE], 'readwrite');
+            const store = transaction.objectStore(POSTS_STORE);
             const request = store.add(newPost);
 
             request.onsuccess = () => {
@@ -76,8 +170,8 @@ export class FeedsDB {
         }
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([STORE_NAME], 'readonly');
-            const store = transaction.objectStore(STORE_NAME);
+            const transaction = this.db!.transaction([POSTS_STORE], 'readonly');
+            const store = transaction.objectStore(POSTS_STORE);
             const index = store.index('timestamp');
             const request = index.getAll();
 
@@ -99,8 +193,8 @@ export class FeedsDB {
         }
 
         return new Promise((resolve, reject) => {
-            const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
-            const store = transaction.objectStore(STORE_NAME);
+            const transaction = this.db!.transaction([POSTS_STORE], 'readwrite');
+            const store = transaction.objectStore(POSTS_STORE);
             const getRequest = store.get(postId);
 
             getRequest.onsuccess = () => {
@@ -128,8 +222,35 @@ export class FeedsDB {
     }
 
     async seedInitialData(): Promise<void> {
-        // No longer seeding with initial posts - feed starts empty
         await this.init();
+
+        // Seed default users
+        const defaultUsers = [
+            {
+                email: 'demo@example.com',
+                password: 'password123',
+                firstName: 'Demo',
+                lastName: 'User'
+            },
+            {
+                email: 'test@user.com',
+                password: 'testpass',
+                firstName: 'Test',
+                lastName: 'User'
+            }
+        ];
+
+        for (const userData of defaultUsers) {
+            try {
+                const existingUser = await this.getUserByEmail(userData.email);
+                if (!existingUser) {
+                    await this.addUser(userData);
+                }
+            } catch (error) {
+                // User might already exist, continue
+                console.log(`User ${userData.email} already exists or error occurred:`, error);
+            }
+        }
     }
 }
 
