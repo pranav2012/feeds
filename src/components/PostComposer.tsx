@@ -1,5 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import {
+	EMOJI_CATEGORIES,
+	COMPOSER_CONFIG,
+	UI_TEXT,
+	type EmojiCategoryKey,
+} from "../utils/constants";
 
 interface PostComposerProps {
 	onPostCreated: () => void;
@@ -12,7 +18,31 @@ const PostComposer: React.FC<PostComposerProps> = ({
 }) => {
 	const [content, setContent] = useState("");
 	const [isPosting, setIsPosting] = useState(false);
+	const [selectedEmoji, setSelectedEmoji] = useState<string>(
+		COMPOSER_CONFIG.DEFAULT_EMOJI
+	);
+	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+	const [activeCategory, setActiveCategory] =
+		useState<EmojiCategoryKey>("smileys");
 	const { isSignedIn, user } = useAuth();
+	const emojiPickerRef = useRef<HTMLDivElement>(null);
+
+	// Close emoji picker when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				emojiPickerRef.current &&
+				!emojiPickerRef.current.contains(event.target as Node)
+			) {
+				setShowEmojiPicker(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
 
 	const handleSubmit = async (e?: React.FormEvent) => {
 		if (e) e.preventDefault();
@@ -25,10 +55,9 @@ const PostComposer: React.FC<PostComposerProps> = ({
 
 			await feedsDB.addPost({
 				content: content.trim(),
-				emoji: "😊",
+				emoji: selectedEmoji,
 				author: user.email,
-				authorAvatar:
-					"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face&auto=format",
+				authorAvatar: COMPOSER_CONFIG.DEFAULT_AVATAR_URL,
 			});
 
 			setContent("");
@@ -56,8 +85,21 @@ const PostComposer: React.FC<PostComposerProps> = ({
 		}
 	};
 
+	const handleEmojiClick = () => {
+		if (!isSignedIn) {
+			onAuthRequired();
+			return;
+		}
+		setShowEmojiPicker(!showEmojiPicker);
+	};
+
+	const handleEmojiSelect = (emoji: string) => {
+		setSelectedEmoji(emoji);
+		setShowEmojiPicker(false);
+	};
+
 	const handleNotImplemented = () => {
-		alert("function not implemented");
+		alert(UI_TEXT.COMPOSER.NOT_IMPLEMENTED_MESSAGE);
 	};
 
 	return (
@@ -71,10 +113,16 @@ const PostComposer: React.FC<PostComposerProps> = ({
 							className="appearance-none bg-white border-0 rounded-md px-3 py-1.5 pr-7 text-sm text-gray-700 hover:bg-gray-50 focus:outline-none cursor-pointer h-8 shadow-sm"
 							disabled={!isSignedIn}
 							onClick={handleNotImplemented}>
-							<option>Paragraph</option>
-							<option>Heading 1</option>
-							<option>Heading 2</option>
-							<option>Quote</option>
+							<option>
+								{UI_TEXT.DROPDOWN_OPTIONS.PARAGRAPH}
+							</option>
+							<option>
+								{UI_TEXT.DROPDOWN_OPTIONS.HEADING_1}
+							</option>
+							<option>
+								{UI_TEXT.DROPDOWN_OPTIONS.HEADING_2}
+							</option>
+							<option>{UI_TEXT.DROPDOWN_OPTIONS.QUOTE}</option>
 						</select>
 						<div className="absolute inset-y-0 right-0 flex items-center px-1.5 pointer-events-none">
 							<svg
@@ -213,17 +261,74 @@ const PostComposer: React.FC<PostComposerProps> = ({
 			{/* Message Input Area */}
 			<div className="mb-4">
 				<div className="flex items-start space-x-3">
-					<div className="flex-shrink-0">
-						<span className="text-xl leading-6">😊</span>
+					<div
+						className="flex-shrink-0 relative"
+						ref={emojiPickerRef}>
+						<button
+							type="button"
+							onClick={handleEmojiClick}
+							className="text-xl leading-6 hover:bg-gray-100 rounded-lg p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+							disabled={!isSignedIn}>
+							{selectedEmoji}
+						</button>
+
+						{/* Emoji Picker Dropdown */}
+						{showEmojiPicker && (
+							<div className="absolute top-10 left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-80 max-h-96 overflow-hidden">
+								{/* Category Tabs */}
+								<div className="flex border-b border-gray-200 bg-gray-50">
+									{Object.entries(EMOJI_CATEGORIES).map(
+										([key, category]) => (
+											<button
+												key={key}
+												type="button"
+												onClick={() =>
+													setActiveCategory(
+														key as EmojiCategoryKey
+													)
+												}
+												className={`flex-1 px-2 py-2 text-xs font-medium transition-colors focus:outline-none ${
+													activeCategory === key
+														? "text-blue-600 border-b-2 border-blue-600 bg-white"
+														: "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+												}`}
+												title={category.name}>
+												{category.emojis[0]}
+											</button>
+										)
+									)}
+								</div>
+
+								{/* Emoji Grid */}
+								<div className="p-3 max-h-64 overflow-y-auto">
+									<div className="grid grid-cols-8 gap-1">
+										{EMOJI_CATEGORIES[
+											activeCategory
+										].emojis.map((emoji, index) => (
+											<button
+												key={index}
+												type="button"
+												onClick={() =>
+													handleEmojiSelect(emoji)
+												}
+												className="text-lg p-1.5 hover:bg-gray-100 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+												title={emoji}>
+												{emoji}
+											</button>
+										))}
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 					<div className="flex-1">
 						<textarea
 							value={content}
 							onChange={(e) => setContent(e.target.value)}
 							onClick={handleTextareaClick}
-							placeholder="How are you feeling today?"
+							placeholder={UI_TEXT.COMPOSER.PLACEHOLDER}
 							className="w-full min-h-[100px] p-0 border-none resize-none outline-none text-gray-800 placeholder-gray-400 bg-transparent text-base leading-6"
-							maxLength={500}
+							maxLength={COMPOSER_CONFIG.MAX_CONTENT_LENGTH}
 							readOnly={!isSignedIn}
 							style={{ fontSize: "16px", lineHeight: "24px" }}
 						/>
