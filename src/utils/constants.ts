@@ -305,4 +305,75 @@ export const EMOJI_CATEGORIES = {
 
 // Type definitions for better type safety
 export type EmojiCategoryKey = keyof typeof EMOJI_CATEGORIES;
-export type EmojiCategory = typeof EMOJI_CATEGORIES[EmojiCategoryKey]; 
+export type EmojiCategory = typeof EMOJI_CATEGORIES[EmojiCategoryKey];
+
+// Form Constants
+export const FORM_CONSTANTS = {
+    LOGIN: {
+        HEADER: {
+            TITLE: "Sign in to continue",
+            SUBTITLE: "Sign in to access all the features on this app",
+            ICON_PATH: "M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1",
+        },
+        FIELDS: {
+            EMAIL: {
+                LABEL: "Email or username",
+                PLACEHOLDER: "Enter your email or username",
+            },
+            PASSWORD: {
+                LABEL: "Password",
+                PLACEHOLDER: "Enter your password",
+            },
+        },
+        BUTTONS: {
+            SUBMIT: "Sign In",
+            LOADING: "Signing in...",
+        },
+        FOOTER: {
+            MESSAGE: "Do not have an account?",
+            LINK_TEXT: "Sign Up",
+        },
+        ERRORS: {
+            INVALID_CREDENTIALS: "Invalid email or password. Try demo@example.com / password123 or test@user.com / testpass",
+            GENERIC: "An error occurred during login. Please try again.",
+        },
+    },
+    SIGNUP: {
+        HEADER: {
+            TITLE: "Create an account to continue",
+            SUBTITLE: "Create an account to access all the features on this app",
+            ICON_PATH: "M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1",
+        },
+        FIELDS: {
+            EMAIL: {
+                LABEL: "Email or username",
+                PLACEHOLDER: "Enter your email or username",
+            },
+            PASSWORD: {
+                LABEL: "Password",
+                PLACEHOLDER: "Enter your password",
+            },
+            CONFIRM_PASSWORD: {
+                LABEL: "Repeat password",
+                PLACEHOLDER: "Enter your password again",
+            },
+        },
+        BUTTONS: {
+            SUBMIT: "Sign Up",
+            LOADING: "Signing Up...",
+        },
+        FOOTER: {
+            MESSAGE: "Already have an account?",
+            LINK_TEXT: "Sign In",
+        },
+        ERRORS: {
+            PASSWORDS_MISMATCH: "Passwords do not match",
+            PASSWORD_TOO_SHORT: "Password must be at least 6 characters long",
+            ACCOUNT_EXISTS: "Failed to create account. Email might already be in use.",
+            GENERIC: "An error occurred during signup. Please try again.",
+        },
+        VALIDATION: {
+            MIN_PASSWORD_LENGTH: 6,
+        },
+    },
+} as const; 

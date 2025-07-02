@@ -18,7 +18,7 @@ export interface User {
 }
 
 const DB_NAME = 'FeedsDB';
-const DB_VERSION = 3;
+const DB_VERSION = 1;
 const POSTS_STORE = 'posts';
 const USERS_STORE = 'users';
 
